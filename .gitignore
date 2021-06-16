@@ -1,0 +1,17 @@
+# ignore files
+lib/
+obj/
+bin/
+
+# clangd
+.cache
+
+# xmake
+.xmake
+xmake.Build
+xmake.XcodeMac
+
+# compile_commands
+compile_commands.json
+
+CMakeLists.txt
