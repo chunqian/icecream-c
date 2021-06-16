@@ -86,26 +86,6 @@ output
 🍦 b = 0x3, b * 3 = 0x9, b - 1 = 0x2, b * 12 = 0x24 
 ```
 
-**The example of printing hex**
-
-```c
-int b = 3;
-
-ic_hex(15, b * 2);
-ic_hex2(b * 3, b - 1);
-ic_hex3(b * 3, b - 1, b * 12);
-ic_hex4(b, b * 3, b - 1, b * 12);
-```
-
-output
-
-```c
-🍦 15 = 0xf 
-🍦 b * 3 = 0x9, b - 1 = 0x2 
-🍦 b * 3 = 0x9, b - 1 = 0x2, b * 12 = 0x24 
-🍦 b = 0x3, b * 3 = 0x9, b - 1 = 0x2, b * 12 = 0x24 
-```
-
 **The example of printing float**
 
 ```c
