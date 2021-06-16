@@ -4,13 +4,13 @@ Never use printf to debug again
 
 Single header, implemented in C99 of [IceCraem](https://github.com/gruns/icecream).
 
-Based on rxi's [log.c](https://github.com/rxi/log.c)
+Based on [rxi's log.c](https://github.com/rxi/log.c)
 
 ## use
 
 import:
 
-```lua
+```c
 #include "icecream.h"
 ```
 
