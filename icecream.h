@@ -5,8 +5,8 @@
  * under the terms of the MIT license. See `log.c` for details.
  */
 
-#ifndef LOG_H
-#define LOG_H
+#ifndef __ICECREAM_H__
+#define __ICECREAM_H__
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -23,7 +23,7 @@ typedef struct {
   const char *file;
   const char *function;
   struct tm *time;
-  void *udata;
+  FILE *udata; // void *udata
   int line;
   int level;
 } log_Event;
@@ -49,6 +49,24 @@ enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
 #define VA_ARG_4(...) VA_ARG_4_(__VA_ARGS__)
 #define VA_ARG_4_(a1, a2, a3, a4, ...) #a1, a1, #a2, a2, #a3, a3, #a4, a4
 
+#define VA_ARG_INT_1(...) VA_ARG_INT_1_(__VA_ARGS__)
+#define VA_ARG_INT_1_(a1, ...) #a1, (long)a1
+#define VA_ARG_INT_2(...) VA_ARG_INT_2_(__VA_ARGS__)
+#define VA_ARG_INT_2_(a1, a2, ...) #a1, (long)a1, #a2, (long)a2
+#define VA_ARG_INT_3(...) VA_ARG_INT_3_(__VA_ARGS__)
+#define VA_ARG_INT_3_(a1, a2, a3, ...) #a1, (long)a1, #a2, (long)a2, #a3, (long)a3
+#define VA_ARG_INT_4(...) VA_ARG_INT_4_(__VA_ARGS__)
+#define VA_ARG_INT_4_(a1, a2, a3, a4, ...) #a1, (long)a1, #a2, (long)a2, #a3, (long)a3, #a4, (long)a4
+
+#define VA_ARG_DOUBLE_1(...) VA_ARG_DOUBLE_1_(__VA_ARGS__)
+#define VA_ARG_DOUBLE_1_(a1, ...) #a1, (double)a1
+#define VA_ARG_DOUBLE_2(...) VA_ARG_DOUBLE_2_(__VA_ARGS__)
+#define VA_ARG_DOUBLE_2_(a1, a2, ...) #a1, (double)a1, #a2, (double)a2
+#define VA_ARG_DOUBLE_3(...) VA_ARG_DOUBLE_3_(__VA_ARGS__)
+#define VA_ARG_DOUBLE_3_(a1, a2, a3, ...) #a1, (double)a1, #a2, (double)a2, #a3, (double)a3
+#define VA_ARG_DOUBLE_4(...) VA_ARG_DOUBLE_4_(__VA_ARGS__)
+#define VA_ARG_DOUBLE_4_(a1, a2, a3, a4, ...) #a1, (double)a1, #a2, (double)a2, #a3, (double)a3, #a4, (double)a4
+
 #define ic(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "", #__VA_ARGS__, #__VA_ARGS__)
 
 #define ic_str(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = \"%s\" ", #__VA_ARGS__, VA_ARG_1(__VA_ARGS__))
@@ -56,20 +74,20 @@ enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
 #define ic_str3(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = \"%s\", %s = \"%s\", %s = \"%s\" ", #__VA_ARGS__, VA_ARG_3(__VA_ARGS__))
 #define ic_str4(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = \"%s\", %s = \"%s\", %s = \"%s\", %s = \"%s\" ", #__VA_ARGS__, VA_ARG_4(__VA_ARGS__))
 
-#define ic_int(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %ld ", #__VA_ARGS__, VA_ARG_1(__VA_ARGS__))
-#define ic_int2(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %ld, %s = %ld ", #__VA_ARGS__, VA_ARG_2(__VA_ARGS__))
-#define ic_int3(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %ld, %s = %ld, %s = %ld ", #__VA_ARGS__, VA_ARG_3(__VA_ARGS__))
-#define ic_int4(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %ld, %s = %ld, %s = %ld, %s = %ld ", #__VA_ARGS__, VA_ARG_4(__VA_ARGS__))
+#define ic_int(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %ld ", #__VA_ARGS__, VA_ARG_INT_1(__VA_ARGS__))
+#define ic_int2(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %ld, %s = %ld ", #__VA_ARGS__, VA_ARG_INT_2(__VA_ARGS__))
+#define ic_int3(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %ld, %s = %ld, %s = %ld ", #__VA_ARGS__, VA_ARG_INT_3(__VA_ARGS__))
+#define ic_int4(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %ld, %s = %ld, %s = %ld, %s = %ld ", #__VA_ARGS__, VA_ARG_INT_4(__VA_ARGS__))
 
 #define ic_hex(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %#x ", #__VA_ARGS__, VA_ARG_1(__VA_ARGS__))
 #define ic_hex2(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %#x, %s = %#x ", #__VA_ARGS__, VA_ARG_2(__VA_ARGS__))
 #define ic_hex3(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %#x, %s = %#x, %s = %#x ", #__VA_ARGS__, VA_ARG_3(__VA_ARGS__))
 #define ic_hex4(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %#x, %s = %#x, %s = %#x, %s = %#x ", #__VA_ARGS__, VA_ARG_4(__VA_ARGS__))
 
-#define ic_float(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %.4lf ", #__VA_ARGS__, VA_ARG_1(__VA_ARGS__))
-#define ic_float2(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %.4lf, %s = %.4lf ", #__VA_ARGS__, VA_ARG_2(__VA_ARGS__))
-#define ic_float3(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %.4lf, %s = %.4lf, %s = %.4lf ", #__VA_ARGS__, VA_ARG_3(__VA_ARGS__))
-#define ic_float4(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %.4lf, %s = %.4lf, %s = %.4lf, %s = %.4lf ", #__VA_ARGS__, VA_ARG_4(__VA_ARGS__))
+#define ic_float(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %.4lf ", #__VA_ARGS__, VA_ARG_DOUBLE_1(__VA_ARGS__))
+#define ic_float2(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %.4lf, %s = %.4lf ", #__VA_ARGS__, VA_ARG_DOUBLE_2(__VA_ARGS__))
+#define ic_float3(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %.4lf, %s = %.4lf, %s = %.4lf ", #__VA_ARGS__, VA_ARG_DOUBLE_3(__VA_ARGS__))
+#define ic_float4(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %.4lf, %s = %.4lf, %s = %.4lf, %s = %.4lf ", #__VA_ARGS__, VA_ARG_DOUBLE_4(__VA_ARGS__))
 
 #define ic_ptr(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %p ", #__VA_ARGS__, VA_ARG_1(__VA_ARGS__))
 #define ic_ptr2(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, "%s = %p, %s = %p ", #__VA_ARGS__, VA_ARG_2(__VA_ARGS__))
@@ -80,7 +98,7 @@ const char* log_level_string(int level);
 void log_set_lock(log_LockFn fn, void *udata);
 void log_set_level(int level);
 void log_set_quiet(bool enable);
-int log_add_callback(log_LogFn fn, void *udata, int level);
+int log_add_callback(log_LogFn fn, FILE *udata, int level); // void *udata
 int log_add_fp(FILE *fp, int level);
 
 void log_log(int level, const char *file, const char *function, int line, const char *fmt, ...);
@@ -90,7 +108,7 @@ void ic_log(int level, const char *file, const char *function, int line, const c
 
 typedef struct {
   log_LogFn fn;
-  void *udata;
+  FILE *udata; // void *udata
   int level;
 } Callback;
 
@@ -208,7 +226,7 @@ void log_set_quiet(bool enable) {
 }
 
 
-int log_add_callback(log_LogFn fn, void *udata, int level) {
+int log_add_callback(log_LogFn fn, FILE *udata, int level) { // void *udata
   for (int i = 0; i < MAX_CALLBACKS; i++) {
     if (!L.callbacks[i].fn) {
       L.callbacks[i] = (Callback) { fn, udata, level };
@@ -224,7 +242,7 @@ int log_add_fp(FILE *fp, int level) {
 }
 
 
-static void init_event(log_Event *ev, void *udata) {
+static void init_event(log_Event *ev, FILE *udata) { // void *udata
   if (!ev->time) {
     time_t t = time(NULL);
     ev->time = localtime(&t);
@@ -295,4 +313,4 @@ void ic_log(int level, const char *file, const char *function, int line, const c
   unlock();
 }
 
-#endif
+#endif // __ICECREAM_H__
