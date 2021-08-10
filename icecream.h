@@ -125,10 +125,6 @@ static void ic_stdout_callback(log_Event *ev) {
   char buf[16];
   buf[strftime(buf, sizeof(buf), "%H:%M:%S", ev->time)] = '\0';
 #ifdef LOG_USE_COLOR
-  // fprintf(
-  //   ev->udata, "[%s %s%-5s\x1b[0m \x1b[0m%s:%d:\x1b[0m in %s\x1b[0m] ",
-  //   buf, level_colors[ev->level], level_strings[ev->level],
-  //   ev->file, ev->line, ev->function);
   if (ev->fmt != NULL && strlen(ev->fmt) == 0) {
     fprintf(
       ev->udata, "%s \x1b[0m%s:%d in %s\x1b[0m() ", IC_PREFIX, ev->file, ev->line, ev->function);
@@ -137,9 +133,6 @@ static void ic_stdout_callback(log_Event *ev) {
       ev->udata, "%s ", IC_PREFIX);
   }
 #else
-  // fprintf(
-  //   ev->udata, "[%s %-5s %s:%d: in %s] ",
-  //   buf, level_strings[ev->level], ev->file, ev->line, ev->function);
   if (ev->fmt != NULL && strlen(ev->fmt) == 0) {
     fprintf(
       ev->udata, "%s %s:%d in %s() ", IC_PREFIX, ev->file, ev->line, ev->function);
