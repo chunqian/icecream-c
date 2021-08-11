@@ -68,7 +68,7 @@ enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
 #define ic_hex(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%#x\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
 #define ic_float(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%.2f\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
 #define ic_double(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%.4lf\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_ptr(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[35m%p\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
+#define ic_ptr(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[32m%p\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
 
 const char *log_level_string(int level);
 void log_set_lock(log_LockFn fn, void *udata);
