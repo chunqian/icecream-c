@@ -61,13 +61,13 @@ enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
   _60, _61, _62, _63, _64, N, ...) N
 
 #define ic(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, 0, "", #__VA_ARGS__, #__VA_ARGS__)
-#define ic_str(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\"%s\"", #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_int(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "%d" , #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_long(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "%ld" , #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_hex(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "%#x", #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_float(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "%.2f", #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_double(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "%.4lf", #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_ptr(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "%p", #__VA_ARGS__, ##__VA_ARGS__)
+#define ic_str(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[32m\"%s\"\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
+#define ic_int(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%d\x1b[0m" , #__VA_ARGS__, ##__VA_ARGS__)
+#define ic_long(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%ld\x1b[0m" , #__VA_ARGS__, ##__VA_ARGS__)
+#define ic_hex(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%#x\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
+#define ic_float(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%.2f\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
+#define ic_double(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%.4lf\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
+#define ic_ptr(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[35m%p\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
 
 const char* log_level_string(int level);
 void log_set_lock(log_LockFn fn, void *udata);
