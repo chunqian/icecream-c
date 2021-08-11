@@ -20,15 +20,16 @@
 #define MAX_ROW 64
 #define MAX_COLUMN 512
 
-typedef struct {
-  va_list ap;
-  const char *fmt;
-  const char *file;
-  const char *function;
-  struct tm *time;
-  FILE *udata; // void *udata
-  int line;
-  int level;
+typedef struct
+{
+    va_list ap;
+    const char *fmt;
+    const char *file;
+    const char *function;
+    struct tm *time;
+    FILE *udata;  // void *udata
+    int line;
+    int level;
 } log_Event;
 
 typedef void (*log_LogFn)(log_Event *ev);
@@ -69,280 +70,291 @@ enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
 #define ic_double(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%.4lf\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
 #define ic_ptr(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[35m%p\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
 
-const char* log_level_string(int level);
+const char *log_level_string(int level);
 void log_set_lock(log_LockFn fn, void *udata);
 void log_set_level(int level);
 void log_set_quiet(bool enable);
-int log_add_callback(log_LogFn fn, FILE *udata, int level); // void *udata
+int log_add_callback(log_LogFn fn, FILE *udata, int level);  // void *udata
 int log_add_fp(FILE *fp, int level);
 
 void log_log(int level, const char *file, const char *function, int line, const char *fmt, ...);
-void ic_log(int level, const char *file, const char *function, int line, int args_count, const char *fmt, const char *arg0, ...);
+void ic_log(int level, const char *file, const char *function, int line, int args_count, const char *fmt,
+            const char *arg0, ...);
 
 #define MAX_CALLBACKS 32
 
-typedef struct {
-  log_LogFn fn;
-  FILE *udata; // void *udata
-  int level;
+typedef struct
+{
+    log_LogFn fn;
+    FILE *udata;  // void *udata
+    int level;
 } Callback;
 
-static struct {
-  void *udata;
-  log_LockFn lock;
-  int level;
-  bool quiet;
-  Callback callbacks[MAX_CALLBACKS];
+static struct
+{
+    void *udata;
+    log_LockFn lock;
+    int level;
+    bool quiet;
+    Callback callbacks[MAX_CALLBACKS];
 } L;
 
-
-static const char *level_strings[] = {
-  "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"
-};
+static const char *level_strings[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
 
 #ifdef LOG_USE_COLOR
-static const char *level_colors[] = {
-  "\x1b[94m", "\x1b[36m", "\x1b[32m", "\x1b[33m", "\x1b[31m", "\x1b[35m"
-};
+static const char *level_colors[] = {"\x1b[94m", "\x1b[36m", "\x1b[32m", "\x1b[33m", "\x1b[31m", "\x1b[35m"};
 #endif
 
-static void stdout_callback(log_Event *ev) {
-  char buf[16];
-  buf[strftime(buf, sizeof(buf), "%H:%M:%S", ev->time)] = '\0';
+static void stdout_callback(log_Event *ev)
+{
+    char buf[16];
+    buf[strftime(buf, sizeof(buf), "%H:%M:%S", ev->time)] = '\0';
 #ifdef LOG_USE_COLOR
-  fprintf(
-    ev->udata, "[%s %s%-5s\x1b[0m \x1b[0m%s:%d:\x1b[0m in %s\x1b[0m] ",
-    buf, level_colors[ev->level], level_strings[ev->level],
-    ev->file, ev->line, ev->function);
+    fprintf(ev->udata, "[%s %s%-5s\x1b[0m \x1b[0m%s:%d:\x1b[0m in %s\x1b[0m] ", buf, level_colors[ev->level],
+            level_strings[ev->level], ev->file, ev->line, ev->function);
 #else
-  fprintf(
-    ev->udata, "[%s %-5s %s:%d: in %s] ",
-    buf, level_strings[ev->level], ev->file, ev->line, ev->function);
+    fprintf(ev->udata, "[%s %-5s %s:%d: in %s] ", buf, level_strings[ev->level], ev->file, ev->line, ev->function);
 #endif
-  vfprintf(ev->udata, ev->fmt, ev->ap);
-  fprintf(ev->udata, "\n");
-  fflush(ev->udata);
+    vfprintf(ev->udata, ev->fmt, ev->ap);
+    fprintf(ev->udata, "\n");
+    fflush(ev->udata);
 }
 
-static void ic_stdout_callback(log_Event *ev) {
-  char buf[16];
-  buf[strftime(buf, sizeof(buf), "%H:%M:%S", ev->time)] = '\0';
+static void ic_stdout_callback(log_Event *ev)
+{
+    char buf[16];
+    buf[strftime(buf, sizeof(buf), "%H:%M:%S", ev->time)] = '\0';
 #ifdef LOG_USE_COLOR
-  if (ev->fmt != NULL && strlen(ev->fmt) == 0) {
-    fprintf(
-      ev->udata, "%s \x1b[0m%s:%d in %s\x1b[0m() ", IC_PREFIX, ev->file, ev->line, ev->function);
-  } else {
-    fprintf(
-      ev->udata, "%s ", IC_PREFIX);
-  }
+    if (ev->fmt != NULL && strlen(ev->fmt) == 0)
+    {
+        fprintf(ev->udata, "%s \x1b[0m%s:%d in %s\x1b[0m() ", IC_PREFIX, ev->file, ev->line, ev->function);
+    }
+    else
+    {
+        fprintf(ev->udata, "%s ", IC_PREFIX);
+    }
 #else
-  if (ev->fmt != NULL && strlen(ev->fmt) == 0) {
-    fprintf(
-      ev->udata, "%s %s:%d in %s() ", IC_PREFIX, ev->file, ev->line, ev->function);
-  } else {
-    fprintf(
-      ev->udata, "%s ", IC_PREFIX);
-  }
+    if (ev->fmt != NULL && strlen(ev->fmt) == 0)
+    {
+        fprintf(ev->udata, "%s %s:%d in %s() ", IC_PREFIX, ev->file, ev->line, ev->function);
+    }
+    else
+    {
+        fprintf(ev->udata, "%s ", IC_PREFIX);
+    }
 #endif
-  vfprintf(ev->udata, ev->fmt, ev->ap);
-  fprintf(ev->udata, "\n");
-  fflush(ev->udata);
+    vfprintf(ev->udata, ev->fmt, ev->ap);
+    fprintf(ev->udata, "\n");
+    fflush(ev->udata);
 }
 
-
-static void file_callback(log_Event *ev) {
-  char buf[64];
-  buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", ev->time)] = '\0';
-  fprintf(
-    ev->udata, "[%s %-5s %s:%d: in %s] ",
-    buf, level_strings[ev->level], ev->file, ev->line, ev->function);
-  vfprintf(ev->udata, ev->fmt, ev->ap);
-  fprintf(ev->udata, "\n");
-  fflush(ev->udata);
+static void file_callback(log_Event *ev)
+{
+    char buf[64];
+    buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", ev->time)] = '\0';
+    fprintf(ev->udata, "[%s %-5s %s:%d: in %s] ", buf, level_strings[ev->level], ev->file, ev->line, ev->function);
+    vfprintf(ev->udata, ev->fmt, ev->ap);
+    fprintf(ev->udata, "\n");
+    fflush(ev->udata);
 }
 
-
-static void lock(void)   {
-  if (L.lock) { L.lock(true, L.udata); }
-}
-
-
-static void unlock(void) {
-  if (L.lock) { L.lock(false, L.udata); }
-}
-
-
-const char* log_level_string(int level) {
-  return level_strings[level];
-}
-
-
-void log_set_lock(log_LockFn fn, void *udata) {
-  L.lock = fn;
-  L.udata = udata;
-}
-
-
-void log_set_level(int level) {
-  L.level = level;
-}
-
-
-void log_set_quiet(bool enable) {
-  L.quiet = enable;
-}
-
-
-int log_add_callback(log_LogFn fn, FILE *udata, int level) { // void *udata
-  for (int i = 0; i < MAX_CALLBACKS; i++) {
-    if (!L.callbacks[i].fn) {
-      L.callbacks[i] = (Callback) { fn, udata, level };
-      return 0;
+static void lock(void)
+{
+    if (L.lock)
+    {
+        L.lock(true, L.udata);
     }
-  }
-  return -1;
 }
 
-
-int log_add_fp(FILE *fp, int level) {
-  return log_add_callback(file_callback, fp, level);
-}
-
-
-static void init_event(log_Event *ev, FILE *udata) { // void *udata
-  if (!ev->time) {
-    time_t t = time(NULL);
-    ev->time = localtime(&t);
-  }
-  ev->udata = udata;
-}
-
-
-void log_log(int level, const char *file, const char *function, int line, const char *fmt, ...) {
-  log_Event ev = {
-    .fmt   = fmt,
-    .file  = file,
-    .function  = function,
-    .line  = line,
-    .level = level,
-  };
-
-  lock();
-
-  if (!L.quiet && level >= L.level) {
-    init_event(&ev, stderr);
-    va_start(ev.ap, fmt);
-    stdout_callback(&ev);
-    va_end(ev.ap);
-  }
-
-  for (int i = 0; i < MAX_CALLBACKS && L.callbacks[i].fn; i++) {
-    Callback *cb = &L.callbacks[i];
-    if (level >= cb->level) {
-      init_event(&ev, cb->udata);
-      va_start(ev.ap, fmt);
-      cb->fn(&ev);
-      va_end(ev.ap);
+static void unlock(void)
+{
+    if (L.lock)
+    {
+        L.lock(false, L.udata);
     }
-  }
-
-  unlock();
 }
 
-void str_trim(char *p_str) {
-  char *p_tmp = p_str;
+const char *log_level_string(int level) { return level_strings[level]; }
 
-  while(*p_str != '\0') {
-    if (*p_str != ' ') {
-      *p_tmp++ = *p_str;
+void log_set_lock(log_LockFn fn, void *udata)
+{
+    L.lock = fn;
+    L.udata = udata;
+}
+
+void log_set_level(int level) { L.level = level; }
+
+void log_set_quiet(bool enable) { L.quiet = enable; }
+
+int log_add_callback(log_LogFn fn, FILE *udata, int level)
+{  // void *udata
+    for (int i = 0; i < MAX_CALLBACKS; i++)
+    {
+        if (!L.callbacks[i].fn)
+        {
+            L.callbacks[i] = (Callback){fn, udata, level};
+            return 0;
+        }
     }
-    ++p_str;
-  }
-  *p_tmp = '\0';
+    return -1;
 }
 
-void str_right_trim(char *p_str) {
-  char *p_tmp = p_str + strlen(p_str) - 1;
-  while(*p_tmp == ' ') {
+int log_add_fp(FILE *fp, int level) { return log_add_callback(file_callback, fp, level); }
+
+static void init_event(log_Event *ev, FILE *udata)
+{  // void *udata
+    if (!ev->time)
+    {
+        time_t t = time(NULL);
+        ev->time = localtime(&t);
+    }
+    ev->udata = udata;
+}
+
+void log_log(int level, const char *file, const char *function, int line, const char *fmt, ...)
+{
+    log_Event ev = {
+        .fmt = fmt,
+        .file = file,
+        .function = function,
+        .line = line,
+        .level = level,
+    };
+
+    lock();
+
+    if (!L.quiet && level >= L.level)
+    {
+        init_event(&ev, stderr);
+        va_start(ev.ap, fmt);
+        stdout_callback(&ev);
+        va_end(ev.ap);
+    }
+
+    for (int i = 0; i < MAX_CALLBACKS && L.callbacks[i].fn; i++)
+    {
+        Callback *cb = &L.callbacks[i];
+        if (level >= cb->level)
+        {
+            init_event(&ev, cb->udata);
+            va_start(ev.ap, fmt);
+            cb->fn(&ev);
+            va_end(ev.ap);
+        }
+    }
+
+    unlock();
+}
+
+void str_trim(char *p_str)
+{
+    char *p_tmp = p_str;
+
+    while (*p_str != '\0')
+    {
+        if (*p_str != ' ')
+        {
+            *p_tmp++ = *p_str;
+        }
+        ++p_str;
+    }
     *p_tmp = '\0';
-    p_tmp--;
-  }
 }
 
-void str_left_trim(char *p_str) {
-  char *p_tmp = p_str;
-  while(*p_tmp == ' ') {
-    p_tmp++;
-  }
-  while(*p_tmp != '\0') {
-    *p_str = *p_tmp;
-    p_str++;
-    p_tmp++;
-  }
-  *p_str = '\0';
-}
-
-int split(char *dst, int row, int column, char *str, const char *spl) {
-  int n = 0;
-  char *result = NULL;
-  result = strtok(str, spl);
-
-  while( result != NULL )
-  {
-    str_left_trim(result);
-    str_right_trim(result);
-    strcpy(dst + (n * column), result);
-    n ++;
-    result = strtok(NULL, spl);
-  }
-  return n;
-}
-
-void ic_log(int level, const char *file, const char *function, int line, int args_count, const char *fmt, const char *arg0, ...) {
-
-  char str[1024] = {0};
-  strncpy(str, arg0, strlen(arg0));
-  char dst[MAX_ROW][MAX_COLUMN] = {0};
-  int cnt = split((char *)dst, MAX_ROW, MAX_COLUMN, str, ",");
-
-  char fmts[1024] = {0};
-  for (int i = 0; i < args_count; ++i) {
-    strcat(fmts, dst[i]);
-    strcat(fmts, " = ");
-    strcat(fmts, fmt);
-    if (i < args_count - 1) {
-      strcat(fmts, ", ");
+void str_right_trim(char *p_str)
+{
+    char *p_tmp = p_str + strlen(p_str) - 1;
+    while (*p_tmp == ' ')
+    {
+        *p_tmp = '\0';
+        p_tmp--;
     }
-  }
-
-  log_Event ev = {
-    .fmt   = args_count > 0 ? fmts : fmt,
-    .file  = file,
-    .function  = function,
-    .line  = line,
-    .level = level,
-  };
-
-  lock();
-
-  if (!L.quiet && level >= L.level) {
-    init_event(&ev, stderr);
-    va_start(ev.ap, arg0);
-    ic_stdout_callback(&ev);
-    va_end(ev.ap);
-  }
-
-  for (int i = 0; i < MAX_CALLBACKS && L.callbacks[i].fn; i++) {
-    Callback *cb = &L.callbacks[i];
-    if (level >= cb->level) {
-      init_event(&ev, cb->udata);
-      va_start(ev.ap, arg0);
-      cb->fn(&ev);
-      va_end(ev.ap);
-    }
-  }
-
-  unlock();
 }
 
-#endif // __ICECREAM_H__
+void str_left_trim(char *p_str)
+{
+    char *p_tmp = p_str;
+    while (*p_tmp == ' ')
+    {
+        p_tmp++;
+    }
+    while (*p_tmp != '\0')
+    {
+        *p_str = *p_tmp;
+        p_str++;
+        p_tmp++;
+    }
+    *p_str = '\0';
+}
+
+int split(char *dst, int row, int column, char *str, const char *spl)
+{
+    int n = 0;
+    char *result = NULL;
+    result = strtok(str, spl);
+
+    while (result != NULL)
+    {
+        str_left_trim(result);
+        str_right_trim(result);
+        strcpy(dst + (n * column), result);
+        n++;
+        result = strtok(NULL, spl);
+    }
+    return n;
+}
+
+void ic_log(int level, const char *file, const char *function, int line, int args_count, const char *fmt,
+            const char *arg0, ...)
+{
+    char str[1024] = {0};
+    strncpy(str, arg0, strlen(arg0));
+    char dst[MAX_ROW][MAX_COLUMN] = {0};
+    int cnt = split((char *)dst, MAX_ROW, MAX_COLUMN, str, ",");
+
+    char fmts[1024] = {0};
+    for (int i = 0; i < args_count; ++i)
+    {
+        strcat(fmts, dst[i]);
+        strcat(fmts, " = ");
+        strcat(fmts, fmt);
+        if (i < args_count - 1)
+        {
+            strcat(fmts, ", ");
+        }
+    }
+
+    log_Event ev = {
+        .fmt = args_count > 0 ? fmts : fmt,
+        .file = file,
+        .function = function,
+        .line = line,
+        .level = level,
+    };
+
+    lock();
+
+    if (!L.quiet && level >= L.level)
+    {
+        init_event(&ev, stderr);
+        va_start(ev.ap, arg0);
+        ic_stdout_callback(&ev);
+        va_end(ev.ap);
+    }
+
+    for (int i = 0; i < MAX_CALLBACKS && L.callbacks[i].fn; i++)
+    {
+        Callback *cb = &L.callbacks[i];
+        if (level >= cb->level)
+        {
+            init_event(&ev, cb->udata);
+            va_start(ev.ap, arg0);
+            cb->fn(&ev);
+            va_end(ev.ap);
+        }
+    }
+
+    unlock();
+}
+
+#endif  // __ICECREAM_H__
