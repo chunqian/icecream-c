@@ -303,7 +303,7 @@ void ic_log(int level, const char *file, const char *function, int line, int arg
   char str[1024] = {0};
   strncpy(str, arg0, strlen(arg0));
   char dst[MAX_ROW][MAX_COLUMN] = {0};
-  int cnt = split(dst, MAX_ROW, MAX_COLUMN, str, ",");
+  int cnt = split((char *)dst, MAX_ROW, MAX_COLUMN, str, ",");
 
   char fmts[1024] = {0};
   for (int i = 0; i < args_count; ++i) {
