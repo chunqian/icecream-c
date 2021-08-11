@@ -6,7 +6,15 @@ Single header, implemented in C99 of [IceCraem](https://github.com/gruns/icecrea
 
 Based on [rxi's log.c](https://github.com/rxi/log.c)
 
-<img align="center" src="https://github.com/chunqian/icecream-c/blob/master/test/test.png">
+
+<style type="text/css">
+img.vw_45 {
+    object-fit: cover;
+    width: 45vw;
+}
+</style>
+
+<img src="https://github.com/chunqian/icecream-c/blob/master/test/test.png" class="vw_45" />
 
 ## use
 
