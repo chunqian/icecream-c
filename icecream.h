@@ -17,6 +17,9 @@
 #define LOG_VERSION "0.1.0"
 #define IC_PREFIX "🍦"
 
+#define MAX_ROW 64
+#define MAX_COLUMN 512
+
 typedef struct {
   va_list ap;
   const char *fmt;
@@ -57,7 +60,7 @@ enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
   _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, \
   _60, _61, _62, _63, _64, N, ...) N
 
-#define ic(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "", #__VA_ARGS__, ##__VA_ARGS__)
+#define ic(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, 0, "", #__VA_ARGS__, #__VA_ARGS__)
 #define ic_str(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\"%s\"", #__VA_ARGS__, ##__VA_ARGS__)
 #define ic_int(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "%d" , #__VA_ARGS__, ##__VA_ARGS__)
 #define ic_long(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "%ld" , #__VA_ARGS__, ##__VA_ARGS__)
@@ -279,7 +282,7 @@ void str_left_trim(char *p_str) {
   *p_str = '\0';
 }
 
-int split(char dst[][128], char *str, const char *spl) {
+int split(char *dst, int row, int column, char *str, const char *spl) {
   int n = 0;
   char *result = NULL;
   result = strtok(str, spl);
@@ -288,7 +291,8 @@ int split(char dst[][128], char *str, const char *spl) {
   {
     str_left_trim(result);
     str_right_trim(result);
-    strcpy(dst[n++], result);
+    strcpy(dst + (n * column), result);
+    n ++;
     result = strtok(NULL, spl);
   }
   return n;
@@ -298,8 +302,8 @@ void ic_log(int level, const char *file, const char *function, int line, int arg
 
   char str[1024] = {0};
   strncpy(str, arg0, strlen(arg0));
-  char dst[64][128] = {0};
-  int cnt = split(dst, str, ",");
+  char dst[MAX_ROW][MAX_COLUMN] = {0};
+  int cnt = split(dst, MAX_ROW, MAX_COLUMN, str, ",");
 
   char fmts[1024] = {0};
   for (int i = 0; i < args_count; ++i) {
@@ -312,7 +316,7 @@ void ic_log(int level, const char *file, const char *function, int line, int arg
   }
 
   log_Event ev = {
-    .fmt   = fmts,
+    .fmt   = args_count > 0 ? fmts : fmt,
     .file  = file,
     .function  = function,
     .line  = line,

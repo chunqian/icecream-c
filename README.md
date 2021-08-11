@@ -17,115 +17,120 @@ import:
 **The exmple when there are no parameters**
 
 ```c
-ic()
+ic();
 ```
 
 output
 
 ```c
-🍦 test/test.c:9 in main()
+🍦 test/test.c:24 in main()
 ```
 
 **The example of printing string**
 
 ```c
-char a[] = "hello";
+char str_a[] = "hello";
+char str_b[] = "world";
 
-ic_str(a, "ccc");
-ic_str2("bbb", a);
-ic_str3("bbb", a, a);
-ic_str4("bbb", a, "777", "888");
+ic_str(str_a, str_b, "!");
 ```
 
 output
 
 ```c
-🍦 a = "hello" 
-🍦 "bbb" = "bbb", a = "hello" 
-🍦 "bbb" = "bbb", a = "hello", a = "hello" 
-🍦 "bbb" = "bbb", a = "hello", "777" = "777", "888" = "888" 
+🍦 str_a = "hello", str_b = "world", "!" = "!"
 ```
 
 **The example of printing int**
 
 ```c
-int b = 3;
+int int_a = 32767;
+int int_b = -32768;
 
-ic_int(1, b * 2);
-ic_int2(b * 3, b - 1);
-ic_int3(b * 3, b - 1, b * 12);
-ic_int4(b, b * 3, b - 1, b * 12);
+ic_int(int_a, int_b, 999);
 ```
 
 output
 
 ```c
-🍦 1 = 1 
-🍦 b * 3 = 9, b - 1 = 2 
-🍦 b * 3 = 9, b - 1 = 2, b * 12 = 36 
-🍦 b = 3, b * 3 = 9, b - 1 = 2, b * 12 = 36 
+🍦 int_a = 32767, int_b = -32768, 999 = 999
+```
+
+**The example of printing long**
+
+```c
+long long_a = 2141483647;
+long long_b = -2147483648;
+
+ic_long(long_a, long_b, 999999);
+```
+
+output
+
+```c
+🍦 long_a = 2141483647, long_b = -2147483648, 999999 = 999999
 ```
 
 **The example of printing hex**
 
 ```c
-int b = 3;
+int int_a = 32767;
+int int_b = -32768;
 
-ic_hex(15, b * 2);
-ic_hex2(b * 3, b - 1);
-ic_hex3(b * 3, b - 1, b * 12);
-ic_hex4(b, b * 3, b - 1, b * 12);
+ic_hex(int_a, int_b, 999);
 ```
 
 output
 
 ```c
-🍦 15 = 0xf 
-🍦 b * 3 = 0x9, b - 1 = 0x2 
-🍦 b * 3 = 0x9, b - 1 = 0x2, b * 12 = 0x24 
-🍦 b = 0x3, b * 3 = 0x9, b - 1 = 0x2, b * 12 = 0x24 
+🍦 int_a = 0x7fff, int_b = 0xffff8000, 999 = 0x3e7
 ```
 
 **The example of printing float**
 
 ```c
-int b = 3;
+float float_a = 1.0;
+float float_b = 2.0;
 
-ic_float(1.0);
-ic_float2(1.0, (float)b);
-ic_float3((float)b, (float)b * 2, 1.0);
-ic_float4((float)b, (float)b / 3, 2.0, (float)b);
+ic_float(float_a, float_b, 999.0);
 ```
 
 output
 
 ```c
-🍦 1.0 = 1.0000 
-🍦 1.0 = 1.0000, (float)b = 3.0000 
-🍦 (float)b = 3.0000, (float)b * 2 = 6.0000, 1.0 = 1.0000 
-🍦 (float)b = 3.0000, (float)b / 3 = 1.0000, 2.0 = 2.0000, (float)b = 3.0000 
+🍦 float_a = 1.00, float_b = 2.00, 999.0 = 999.00
+```
+
+**The example of printing double**
+
+```c
+double double_a = 1.0;
+double double_b = 2.0;
+
+ic_double(double_a, double_b, 999.0);
+```
+
+output
+
+```c
+🍦 double_a = 1.0000, double_b = 2.0000, 999.0 = 999.0000
 ```
 
 **The example of printing pointer**
 
 ```c
-char a[] = "hello";
-int b = 3;
-int *p = &b;
+char str_a[] = "hello";
+char str_b[] = "world";
+int *ptr_a = &str_a;
+int *ptr_b = &str_b;
 
-ic_ptr(a, "ddd");
-ic_ptr2(a, &b);
-ic_ptr3(a, &b, p);
-ic_ptr4(a, &b, p, &p);
+ic_ptr(ptr_a, ptr_b, "!");
 ```
 
 output
 
 ```c
-🍦 a = 0x7ffeef5223ac 
-🍦 a = 0x7ffeef5223ac, &b = 0x7ffeef5223b4 
-🍦 a = 0x7ffeef5223ac, &b = 0x7ffeef5223b4, p = 0x7ffeef5223b4 
-🍦 a = 0x7ffeef5223ac, &b = 0x7ffeef5223b4, p = 0x7ffeef5223b4, &p = 0x7ffeef5223a0 
+🍦 ptr_a = 0x7ffee2bcf378, ptr_b = 0x7ffee2bcf380, "!" = 0x10d031e3e
 ```
 
 ## License
