@@ -68,7 +68,7 @@ enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
 #define ic_hex(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%#x\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
 #define ic_float(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%.2f\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
 #define ic_double(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%.4lf\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_ptr(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[32m%p\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
+#define ic_ptr(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%p\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
 
 const char *log_level_string(int level);
 void log_set_lock(log_LockFn fn, void *udata);
@@ -124,25 +124,16 @@ static void ic_stdout_callback(log_Event *ev)
 {
     char buf[16];
     buf[strftime(buf, sizeof(buf), "%H:%M:%S", ev->time)] = '\0';
-#ifdef LOG_USE_COLOR
+
     if (ev->fmt != NULL && strlen(ev->fmt) == 0)
     {
-        fprintf(ev->udata, "%s \x1b[0m%s:%d in %s\x1b[0m() ", IC_PREFIX, ev->file, ev->line, ev->function);
+        fprintf(ev->udata, "%s \x1b[0m%s:\x1b[34m%d\x1b[0m in \x1b[34m%s\x1b[0m() ", IC_PREFIX, ev->file, ev->line, ev->function);
     }
     else
     {
         fprintf(ev->udata, "%s ", IC_PREFIX);
     }
-#else
-    if (ev->fmt != NULL && strlen(ev->fmt) == 0)
-    {
-        fprintf(ev->udata, "%s %s:%d in %s() ", IC_PREFIX, ev->file, ev->line, ev->function);
-    }
-    else
-    {
-        fprintf(ev->udata, "%s ", IC_PREFIX);
-    }
-#endif
+
     vfprintf(ev->udata, ev->fmt, ev->ap);
     fprintf(ev->udata, "\n");
     fflush(ev->udata);
