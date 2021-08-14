@@ -15,7 +15,7 @@
 #include <string.h>
 
 #define LOG_VERSION "0.1.0"
-#define IC_PREFIX "🍦"
+#define PRINT_PREFIX "🍦"
 
 #define MAX_ROW 64
 #define MAX_COLUMN 256
@@ -44,7 +44,7 @@ enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
 #define log_error(...) log_log(LOG_ERROR, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 #define log_fatal(...) log_log(LOG_FATAL, __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
 
-#define IC_ARG_COUNT(...) IC_INTERNAL_ARG_COUNT_PRIVATE(0, ##__VA_ARGS__, \
+#define PRINT_ARG_COUNT(...) PRINT_INTERNAL_ARG_COUNT_PRIVATE(0, ##__VA_ARGS__, \
   64, 63, 62, 61, 60, \
   59, 58, 57, 56, 55, 54, 53, 52, 51, 50, \
   49, 48, 47, 46, 45, 44, 43, 42, 41, 40, \
@@ -52,7 +52,7 @@ enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
   29, 28, 27, 26, 25, 24, 23, 22, 21, 20, \
   19, 18, 17, 16, 15, 14, 13, 12, 11, 10, \
    9,  8,  7,  6,  5,  4,  3,  2,  1,  0)
-#define IC_INTERNAL_ARG_COUNT_PRIVATE( \
+#define PRINT_INTERNAL_ARG_COUNT_PRIVATE( \
    _0,  _1,  _2,  _3,  _4,  _5,  _6,  _7,  _8,  _9, \
   _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, \
   _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, \
@@ -80,14 +80,23 @@ static const char *print_colors[] = {
     "\x1b[34m%p\x1b[0m"
 };
 
-#define ic(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, 0, "", #__VA_ARGS__, #__VA_ARGS__)
-#define ic_str(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_STR], #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_int(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_INT] , #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_long(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_LONG] , #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_hex(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_HEX], #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_float(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_FLOAT], #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_double(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_DOUBLE], #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_ptr(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_PTR], #__VA_ARGS__, ##__VA_ARGS__)
+#define print_func(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, 0, "", #__VA_ARGS__, #__VA_ARGS__)
+#define print_str(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_STR], #__VA_ARGS__, ##__VA_ARGS__)
+#define print_int(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_INT] , #__VA_ARGS__, ##__VA_ARGS__)
+#define print_long(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_LONG] , #__VA_ARGS__, ##__VA_ARGS__)
+#define print_hex(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_HEX], #__VA_ARGS__, ##__VA_ARGS__)
+#define print_float(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_FLOAT], #__VA_ARGS__, ##__VA_ARGS__)
+#define print_double(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_DOUBLE], #__VA_ARGS__, ##__VA_ARGS__)
+#define print_ptr(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_PTR], #__VA_ARGS__, ##__VA_ARGS__)
+
+#define ic(...) print_func(__VA_ARGS__)
+#define ic_str(...) print_str(__VA_ARGS__)
+#define ic_int(...) print_int(__VA_ARGS__)
+#define ic_long(...) print_long(__VA_ARGS__)
+#define ic_hex(...) print_hex(__VA_ARGS__)
+#define ic_float(...) print_float(__VA_ARGS__)
+#define ic_double(...) print_double(__VA_ARGS__)
+#define ic_ptr(...) print_ptr(__VA_ARGS__)
 
 const char *log_level_string(int level);
 void log_set_lock(log_LockFn fn, void *udata);
@@ -139,18 +148,18 @@ static void stdout_callback(log_Event *ev)
     fflush(ev->udata);
 }
 
-static void ic_stdout_callback(log_Event *ev)
+static void stdout_print_callback(log_Event *ev)
 {
     char buf[16];
     buf[strftime(buf, sizeof(buf), "%H:%M:%S", ev->time)] = '\0';
 
     if (ev->fmt != NULL && strlen(ev->fmt) == 0)
     {
-        fprintf(ev->udata, "%s \x1b[0m%s:\x1b[34m%d\x1b[0m in \x1b[34m%s\x1b[0m() ", IC_PREFIX, ev->file, ev->line, ev->function);
+        fprintf(ev->udata, "%s \x1b[0m%s:\x1b[34m%d\x1b[0m in \x1b[34m%s\x1b[0m() ", PRINT_PREFIX, ev->file, ev->line, ev->function);
     }
     else
     {
-        fprintf(ev->udata, "%s ", IC_PREFIX);
+        fprintf(ev->udata, "%s ", PRINT_PREFIX);
     }
 
     vfprintf(ev->udata, ev->fmt, ev->ap);
@@ -348,7 +357,7 @@ void log_print(int level, const char *file, const char *function, int line, int 
     {
         init_event(&ev, stderr);
         va_start(ev.ap, arg0);
-        ic_stdout_callback(&ev);
+        stdout_print_callback(&ev);
         va_end(ev.ap);
     }
 
