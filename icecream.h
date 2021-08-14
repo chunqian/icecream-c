@@ -62,6 +62,7 @@ enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
   _60, _61, _62, _63, _64, N, ...) N
 
 enum {
+    FORMAT_FUNC, 
     FORMAT_STR, 
     FORMAT_INT, 
     FORMAT_LONG, 
@@ -71,6 +72,7 @@ enum {
     FORMAT_PTR 
 };
 static const char *format_colors[] = {
+    "",
     "\x1b[32m\"%s\"\x1b[0m",
     "\x1b[34m%d\x1b[0m",
     "\x1b[34m%ld\x1b[0m",
@@ -80,8 +82,10 @@ static const char *format_colors[] = {
     "\x1b[34m%p\x1b[0m"
 };
 
+#define print(...) \
+    log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), format_colors[FORMAT_FUNC], #__VA_ARGS__, ##__VA_ARGS__)
 #define print_func(...) \
-    log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, 0, "", #__VA_ARGS__, #__VA_ARGS__)
+    log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, 0, format_colors[FORMAT_FUNC], #__VA_ARGS__, #__VA_ARGS__)
 #define print_str(...) \
     log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), format_colors[FORMAT_STR], #__VA_ARGS__, ##__VA_ARGS__)
 #define print_int(...) \
