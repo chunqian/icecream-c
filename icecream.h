@@ -18,7 +18,7 @@
 #define IC_PREFIX "🍦"
 
 #define MAX_ROW 64
-#define MAX_COLUMN 512
+#define MAX_COLUMN 256
 
 typedef struct
 {
@@ -61,14 +61,33 @@ enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
   _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, \
   _60, _61, _62, _63, _64, N, ...) N
 
-#define ic(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, 0, "", #__VA_ARGS__, #__VA_ARGS__)
-#define ic_str(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[32m\"%s\"\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_int(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%d\x1b[0m" , #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_long(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%ld\x1b[0m" , #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_hex(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%#x\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_float(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%.2f\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_double(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%.4lf\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
-#define ic_ptr(...) ic_log(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), "\x1b[34m%p\x1b[0m", #__VA_ARGS__, ##__VA_ARGS__)
+enum {
+    LOG_STR, 
+    LOG_INT, 
+    LOG_LONG, 
+    LOG_HEX, 
+    LOG_FLOAT, 
+    LOG_DOUBLE, 
+    LOG_PTR 
+};
+static const char *log_colors[] = {
+    "\x1b[32m\"%s\"\x1b[0m",
+    "\x1b[34m%d\x1b[0m",
+    "\x1b[34m%ld\x1b[0m",
+    "\x1b[34m%#x\x1b[0m",
+    "\x1b[34m%.2f\x1b[0m",
+    "\x1b[34m%.4lf\x1b[0m",
+    "\x1b[34m%p\x1b[0m"
+};
+
+#define ic(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, 0, "", #__VA_ARGS__, #__VA_ARGS__)
+#define ic_str(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), log_colors[LOG_STR], #__VA_ARGS__, ##__VA_ARGS__)
+#define ic_int(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), log_colors[LOG_INT] , #__VA_ARGS__, ##__VA_ARGS__)
+#define ic_long(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), log_colors[LOG_LONG] , #__VA_ARGS__, ##__VA_ARGS__)
+#define ic_hex(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), log_colors[LOG_HEX], #__VA_ARGS__, ##__VA_ARGS__)
+#define ic_float(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), log_colors[LOG_FLOAT], #__VA_ARGS__, ##__VA_ARGS__)
+#define ic_double(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), log_colors[LOG_DOUBLE], #__VA_ARGS__, ##__VA_ARGS__)
+#define ic_ptr(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, IC_ARG_COUNT(__VA_ARGS__), log_colors[LOG_PTR], #__VA_ARGS__, ##__VA_ARGS__)
 
 const char *log_level_string(int level);
 void log_set_lock(log_LockFn fn, void *udata);
@@ -78,7 +97,7 @@ int log_add_callback(log_LogFn fn, FILE *udata, int level);  // void *udata
 int log_add_fp(FILE *fp, int level);
 
 void log_log(int level, const char *file, const char *function, int line, const char *fmt, ...);
-void ic_log(int level, const char *file, const char *function, int line, int args_count, const char *fmt,
+void log_print(int level, const char *file, const char *function, int line, int args_count, const char *fmt,
             const char *arg0, ...);
 
 #define MAX_CALLBACKS 32
@@ -295,7 +314,7 @@ int split(char *dst, int row, int column, char *str, const char *spl)
     return n;
 }
 
-void ic_log(int level, const char *file, const char *function, int line, int args_count, const char *fmt,
+void log_print(int level, const char *file, const char *function, int line, int args_count, const char *fmt,
             const char *arg0, ...)
 {
     char str[1024] = {0};
