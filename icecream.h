@@ -62,15 +62,15 @@ enum { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
   _60, _61, _62, _63, _64, N, ...) N
 
 enum {
-    PRINT_STR, 
-    PRINT_INT, 
-    PRINT_LONG, 
-    PRINT_HEX, 
-    PRINT_FLOAT, 
-    PRINT_DOUBLE, 
-    PRINT_PTR 
+    FORMAT_STR, 
+    FORMAT_INT, 
+    FORMAT_LONG, 
+    FORMAT_HEX, 
+    FORMAT_FLOAT, 
+    FORMAT_DOUBLE, 
+    FORMAT_PTR 
 };
-static const char *print_colors[] = {
+static const char *format_colors[] = {
     "\x1b[32m\"%s\"\x1b[0m",
     "\x1b[34m%d\x1b[0m",
     "\x1b[34m%ld\x1b[0m",
@@ -80,14 +80,22 @@ static const char *print_colors[] = {
     "\x1b[34m%p\x1b[0m"
 };
 
-#define print_func(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, 0, "", #__VA_ARGS__, #__VA_ARGS__)
-#define print_str(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_STR], #__VA_ARGS__, ##__VA_ARGS__)
-#define print_int(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_INT] , #__VA_ARGS__, ##__VA_ARGS__)
-#define print_long(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_LONG] , #__VA_ARGS__, ##__VA_ARGS__)
-#define print_hex(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_HEX], #__VA_ARGS__, ##__VA_ARGS__)
-#define print_float(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_FLOAT], #__VA_ARGS__, ##__VA_ARGS__)
-#define print_double(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_DOUBLE], #__VA_ARGS__, ##__VA_ARGS__)
-#define print_ptr(...) log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), print_colors[PRINT_PTR], #__VA_ARGS__, ##__VA_ARGS__)
+#define print_func(...) \
+    log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, 0, "", #__VA_ARGS__, #__VA_ARGS__)
+#define print_str(...) \
+    log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), format_colors[FORMAT_STR], #__VA_ARGS__, ##__VA_ARGS__)
+#define print_int(...) \
+    log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), format_colors[FORMAT_INT], #__VA_ARGS__, ##__VA_ARGS__)
+#define print_long(...) \
+    log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), format_colors[FORMAT_LONG], #__VA_ARGS__, ##__VA_ARGS__)
+#define print_hex(...) \
+    log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), format_colors[FORMAT_HEX], #__VA_ARGS__, ##__VA_ARGS__)
+#define print_float(...) \
+    log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), format_colors[FORMAT_FLOAT], #__VA_ARGS__, ##__VA_ARGS__)
+#define print_double(...) \
+    log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), format_colors[FORMAT_DOUBLE], #__VA_ARGS__, ##__VA_ARGS__)
+#define print_ptr(...) \
+    log_print(LOG_DEBUG, __FILE__, __FUNCTION__, __LINE__, PRINT_ARG_COUNT(__VA_ARGS__), format_colors[FORMAT_PTR], #__VA_ARGS__, ##__VA_ARGS__)
 
 #define ic(...) print_func(__VA_ARGS__)
 #define ic_str(...) print_str(__VA_ARGS__)
