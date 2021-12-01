@@ -1,4 +1,4 @@
-#include "../icecream.h"
+#include "icecream.h"
 
 int main(int argc, char const *argv[])
 {
@@ -18,8 +18,8 @@ int main(int argc, char const *argv[])
     double double_a = 1.0;
     double double_b = 2.0;
 
-    int *ptr_a = &str_a;
-    int *ptr_b = &str_b;
+    char *ptr_a = &str_a[0];
+    char *ptr_b = &str_b[0];
 
     ic();
 
