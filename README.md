@@ -121,8 +121,8 @@ output
 ```c
 char str_a[] = "hello";
 char str_b[] = "world";
-int *ptr_a = &str_a;
-int *ptr_b = &str_b;
+char *ptr_a = &str_a[0];
+char *ptr_b = &str_b[0];
 
 ic_ptr(ptr_a, ptr_b, "!");
 ```
