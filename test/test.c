@@ -1,4 +1,4 @@
-#include "icecream.h"
+#include "../icecream.h"
 
 int main(int argc, char const *argv[])
 {

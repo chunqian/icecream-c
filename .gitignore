@@ -15,3 +15,5 @@ xmake.XcodeMac
 compile_commands.json
 
 CMakeLists.txt
+*.sublime-project
+*.sublime-workspace
